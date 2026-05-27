@@ -5,6 +5,7 @@ import { DiagnosticsPanel } from './components/DiagnosticsPanel';
 import { StatusPanel } from './components/StatusPanel';
 import type { ActionLogEntry } from './diagnostics/logger';
 import { createActionLog, pushActionLog } from './diagnostics/logger';
+import { useWcSessionMonitor } from './diagnostics/useWcSessionMonitor';
 import { appVersion } from './version';
 
 export function App() {
@@ -13,6 +14,8 @@ export function App() {
   function addLog(entry: ActionLogEntry) {
     setLogs((current) => pushActionLog(current, entry));
   }
+
+  useWcSessionMonitor(addLog);
 
   function clearLocalState() {
     localStorage.clear();
