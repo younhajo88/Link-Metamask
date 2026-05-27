@@ -45,6 +45,10 @@ Ethereum Mainnet is included as a connection/default network to reduce mobile Wa
 
 Use testnets first. If mainnet behavior is added later, keep explicit confirmation and strong warnings around real transfers.
 
+## Deployment Check
+
+The footer shows the app version, build commit, and build time. On Vercel, the commit is read from `VERCEL_GIT_COMMIT_SHA`; local builds fall back to `git rev-parse --short HEAD`.
+
 ---
 
 # MetaMask 연결 테스트
@@ -93,3 +97,7 @@ MetaMask 확장 프로그램이 설치된 Chrome에서 로컬 URL을 엽니다.
 모바일 WalletConnect 새로고침 시 네트워크 불일치 팝업을 줄이기 위해 Ethereum Mainnet을 연결/기본 네트워크로 포함합니다. 다만 전송과 서명 테스트 버튼은 Sepolia 또는 Polygon Amoy에서만 활성화됩니다.
 
 먼저 테스트넷을 사용하세요. 나중에 메인넷 액션을 추가한다면 실제 전송 전에 명시적인 확인과 강한 경고를 유지해야 합니다.
+
+## 배포 확인
+
+페이지 하단에 앱 버전, 빌드 커밋, 빌드 시간이 표시됩니다. Vercel에서는 `VERCEL_GIT_COMMIT_SHA`를 사용하고, 로컬 빌드는 `git rev-parse --short HEAD` 값을 사용합니다.

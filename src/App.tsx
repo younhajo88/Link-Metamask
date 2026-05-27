@@ -5,6 +5,7 @@ import { DiagnosticsPanel } from './components/DiagnosticsPanel';
 import { StatusPanel } from './components/StatusPanel';
 import type { ActionLogEntry } from './diagnostics/logger';
 import { createActionLog, pushActionLog } from './diagnostics/logger';
+import { appVersion } from './version';
 
 export function App() {
   const [logs, setLogs] = useState<ActionLogEntry[]>([]);
@@ -41,6 +42,11 @@ export function App() {
         <ActionsPanel onLog={addLog} />
         <DiagnosticsPanel logs={logs} onClearLogs={() => setLogs([])} />
       </div>
+      <footer className="app-footer">
+        <span>Version {appVersion.version}</span>
+        <span>Commit {appVersion.commit}</span>
+        <span>Built {new Date(appVersion.buildTime).toLocaleString()}</span>
+      </footer>
     </main>
   );
 }
