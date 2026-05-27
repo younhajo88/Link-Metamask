@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MetaMask Link Test">
+  <rect width="64" height="64" rx="14" fill="#162029" />
+  <path d="M17 20h30l-6 24H23L17 20Z" fill="#f6851b" />
+  <path d="M23 44h18l-9 7-9-7Z" fill="#e2761b" />
+  <path d="M17 20 9 29l14 15 4-16-10-8Z" fill="#763d16" />
+  <path d="m47 20 8 9-14 15-4-16 10-8Z" fill="#763d16" />
+</svg>
