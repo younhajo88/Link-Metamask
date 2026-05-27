@@ -26,7 +26,17 @@ Current AppKit setup passes:
 networks: supportedChains
 ```
 
-`defaultNetwork` is not explicitly set yet. Because `supportedChains` is ordered as `[sepolia, polygonAmoy]`, AppKit/Wagmi may treat Sepolia as the first/default network during initial state and session restoration.
+Originally, `defaultNetwork` was not explicitly set and `supportedChains` was ordered as `[sepolia, polygonAmoy]`, so AppKit/Wagmi could treat Sepolia as the first/default network during initial state and session restoration.
+
+The current mitigation is to include Ethereum Mainnet as a connection/default network while keeping test actions limited to testnets:
+
+```ts
+connectionNetworks = [mainnet, sepolia, polygonAmoy]
+defaultNetwork = mainnet
+testActionChains = [sepolia, polygonAmoy]
+```
+
+This is intended to reduce refresh-time Switch Network prompts when MetaMask Mobile already grants mainnet permission by default, without enabling mainnet transfer/sign tests.
 
 ## Observed Behavior
 
@@ -107,7 +117,7 @@ Reason: related issue #4714 suggests refresh behavior can still be confusing whe
 
 Preferred first response:
 
-1. Explicitly set `defaultNetwork: sepolia` in AppKit.
+1. Include Ethereum Mainnet as connection/default network to reduce permission mismatch during refresh.
 2. Add first-connect guidance in the UI:
    - In MetaMask approval screen, open `Permissions`.
    - Edit `활성화된 네트워크 사용`.
@@ -122,6 +132,15 @@ Preferred first response:
    - `allowUnsupportedChain: true`.
    - Disabling transaction/sign actions unless the active chain is Sepolia or Polygon Amoy.
    - More explicit stale-session reset guidance.
+
+Implemented mitigation:
+
+- Added Ethereum Mainnet to the connection network list.
+- Set AppKit `defaultNetwork` to Ethereum Mainnet.
+- Split chain concepts:
+  - `connectionNetworks`: mainnet + testnets, used for wallet connection/session stability.
+  - `testActionChains`: Sepolia + Polygon Amoy, used for network switch and wallet action tests.
+- Disabled transfer/sign buttons unless the active wallet chain is Sepolia or Polygon Amoy.
 
 ## Why The Frontend Shows A Switch Network Popup
 
@@ -235,6 +254,7 @@ This is likely a better long-term design for this project than relying on AppKit
 ## Next Things To Verify
 
 - Does `defaultNetwork: sepolia` change the MetaMask approval network checklist?
+- Does `defaultNetwork: mainnet` reduce the refresh-time Switch Network popup when MetaMask Mobile grants mainnet permission by default?
 - Does MetaMask pre-check networks based on its own enabled network state rather than AppKit `networks`?
 - Does explicitly checking Sepolia + Polygon Amoy remain stable after:
   - browser refresh,

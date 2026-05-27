@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createConfig, http, injected, type Config } from 'wagmi';
 import type { Chain } from 'wagmi/chains';
-import { supportedChains } from './chains';
+import { connectionNetworks, defaultNetwork } from './chains';
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID as string | undefined;
 
@@ -23,7 +23,7 @@ const customRpcUrls = {
     : {}),
 };
 
-const fallbackChains = supportedChains as unknown as [Chain, ...Chain[]];
+const fallbackChains = connectionNetworks as unknown as [Chain, ...Chain[]];
 
 async function createWagmiConfig(): Promise<Config> {
   if (!isProjectIdConfigured) {
@@ -31,6 +31,7 @@ async function createWagmiConfig(): Promise<Config> {
       chains: fallbackChains,
       connectors: [injected({ target: 'metaMask' })],
       transports: {
+        1: http(),
         11155111: http(import.meta.env.VITE_SEPOLIA_RPC_URL || undefined),
         80002: http(import.meta.env.VITE_POLYGON_AMOY_RPC_URL || undefined),
       },
@@ -43,14 +44,15 @@ async function createWagmiConfig(): Promise<Config> {
   ]);
 
   const wagmiAdapter = new WagmiAdapter({
-    networks: supportedChains,
+    networks: connectionNetworks,
     projectId: projectId ?? '',
     customRpcUrls,
   });
 
   createAppKit({
     adapters: [wagmiAdapter],
-    networks: supportedChains,
+    networks: connectionNetworks,
+    defaultNetwork,
     projectId: projectId ?? '',
     metadata: {
       name: 'MetaMask Link Test',

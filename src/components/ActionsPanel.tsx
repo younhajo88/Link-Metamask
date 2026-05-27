@@ -16,7 +16,7 @@ import {
   prepareTokenTransferArgs,
   prepareTypedData,
 } from '../wallet/actions';
-import { supportedChains } from '../wallet/chains';
+import { isTestActionChain, testActionChains } from '../wallet/chains';
 import { createActionLog, toErrorDetails, type ActionLogEntry } from '../diagnostics/logger';
 
 interface ActionsPanelProps {
@@ -38,6 +38,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
   const [tokenDecimals, setTokenDecimals] = useState('18');
 
   const isConnected = Boolean(account.address);
+  const canRunTestAction = isConnected && isTestActionChain(chainId);
 
   async function runAction(action: string, callback: () => Promise<unknown>) {
     onLog(createActionLog(action, 'pending', { chainId, address: account.address }));
@@ -57,6 +58,13 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
           <span>{chainId ? `Active chain ${chainId}` : 'No active chain'}</span>
         </div>
       </div>
+
+      {!canRunTestAction && isConnected && (
+        <p className="warning-text">
+          연결 안정화를 위해 Ethereum Mainnet을 지원 목록에 포함했지만, 전송/서명 테스트는
+          Sepolia 또는 Polygon Amoy에서만 실행됩니다. 먼저 테스트 네트워크로 전환하세요.
+        </p>
+      )}
 
       <div className="form-grid">
         <label>
@@ -81,7 +89,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
         <div>
           <h3>Network</h3>
           <div className="button-row">
-            {supportedChains.map((chain) => (
+            {testActionChains.map((chain) => (
               <button
                 key={chain.id}
                 type="button"
@@ -100,7 +108,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
           <div className="button-row">
             <button
               type="button"
-              disabled={!isConnected}
+              disabled={!canRunTestAction}
               onClick={() =>
                 runAction('native_transfer', () =>
                   sendTransactionAsync(prepareNativeTransfer(recipient as `0x${string}`, amount)),
@@ -112,7 +120,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
             </button>
             <button
               type="button"
-              disabled={!isConnected}
+              disabled={!canRunTestAction}
               onClick={() =>
                 runAction('erc20_transfer', () =>
                   writeContractAsync({
@@ -139,7 +147,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
           <div className="button-row">
             <button
               type="button"
-              disabled={!isConnected}
+              disabled={!canRunTestAction}
               onClick={() =>
                 runAction('personal_sign', () =>
                   signMessageAsync({
@@ -153,7 +161,7 @@ export function ActionsPanel({ onLog }: ActionsPanelProps) {
             </button>
             <button
               type="button"
-              disabled={!isConnected}
+              disabled={!canRunTestAction}
               onClick={() =>
                 runAction('typed_data_sign', () =>
                   signTypedDataAsync(prepareTypedData(chainId, account.address as `0x${string}`)),

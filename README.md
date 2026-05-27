@@ -41,7 +41,9 @@ If mobile connection behaves inconsistently:
 
 ## Safety
 
-Use testnets first. The page can request real transfers if connected to a mainnet and valid transaction fields are entered.
+Ethereum Mainnet is included as a connection/default network to reduce mobile WalletConnect refresh-time network mismatch prompts. Transfer and signing test buttons are enabled only on Sepolia or Polygon Amoy.
+
+Use testnets first. If mainnet behavior is added later, keep explicit confirmation and strong warnings around real transfers.
 
 ---
 
@@ -88,4 +90,6 @@ MetaMask 확장 프로그램이 설치된 Chrome에서 로컬 URL을 엽니다.
 
 ## 안전
 
-먼저 테스트넷을 사용하세요. 메인넷에 연결된 상태에서 유효한 전송 값을 입력하면 실제 전송 요청이 발생할 수 있습니다.
+모바일 WalletConnect 새로고침 시 네트워크 불일치 팝업을 줄이기 위해 Ethereum Mainnet을 연결/기본 네트워크로 포함합니다. 다만 전송과 서명 테스트 버튼은 Sepolia 또는 Polygon Amoy에서만 활성화됩니다.
+
+먼저 테스트넷을 사용하세요. 나중에 메인넷 액션을 추가한다면 실제 전송 전에 명시적인 확인과 강한 경고를 유지해야 합니다.
