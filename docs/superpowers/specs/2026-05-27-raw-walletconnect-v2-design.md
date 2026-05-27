@@ -43,6 +43,23 @@ await signClient.request({
 });
 ```
 
+## AppKit/Wagmi Finding
+
+The shared Claude conversation suggested forcing Sepolia and Polygon Amoy into required chains by passing `requiredNamespaces` to `createAppKit`. With the current project dependencies, `@reown/appkit@1.8.20` and `@reown/appkit-adapter-wagmi@1.8.20`, that suggestion should not be applied blindly.
+
+The local type definitions for React AppKit's `CreateAppKit` options do not expose a `requiredNamespaces` field. The Wagmi adapter's WalletConnect connector also connects through this flow:
+
+```ts
+const namespaces = WcHelpersUtil.createNamespaces(caipNetworks, universalProviderConfigOverride);
+await provider.connect({
+  optionalNamespaces: namespaces,
+});
+```
+
+This means the current AppKit/Wagmi path likely sends configured networks as `optionalNamespaces`, even when `networks: [mainnet, sepolia, polygonAmoy]` is configured. If MetaMask Mobile displays optional chains as unchecked by default, chains left unchecked by the user may not appear in the approved `session.namespaces`.
+
+`universalProviderConfigOverride` can override methods, chains, events, rpcMap, and defaultChain, but this path is still passed to the connector as `optionalNamespaces`. To verify mandatory initial approval for testnet chains, the Raw WalletConnect v2 tab should directly create proposals with `requiredNamespaces`.
+
 ## Key Difference From AppKit/Wagmi
 
 Current AppKit/Wagmi mode:

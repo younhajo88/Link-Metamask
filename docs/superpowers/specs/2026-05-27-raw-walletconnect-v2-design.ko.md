@@ -32,6 +32,23 @@ requiredNamespaces: {
 
 연결이 승인되면 지갑은 실제 승인된 `session.namespaces`를 반환한다. 이 승인 결과가 중요하다. dApp이 요청한 체인과 MetaMask가 최종 승인한 체인은 다를 수 있으며, 이후 요청은 `signClient.request({ topic, chainId, request })`처럼 특정 `chainId`를 지정해서 보낸다.
 
+## AppKit/Wagmi 확인 사항
+
+공유 대화에서는 `createAppKit({ requiredNamespaces })`로 Sepolia와 Polygon Amoy를 required chain으로 강제할 수 있다는 제안이 있었다. 그러나 현재 프로젝트가 사용하는 `@reown/appkit@1.8.20`, `@reown/appkit-adapter-wagmi@1.8.20` 기준으로는 이 제안을 그대로 적용하면 안 된다.
+
+로컬 타입과 번들 코드를 확인하면 현재 React AppKit의 `CreateAppKit` 옵션에는 `requiredNamespaces` 필드가 없다. 또한 Wagmi adapter의 WalletConnect connector는 연결 시 다음 흐름을 사용한다.
+
+```ts
+const namespaces = WcHelpersUtil.createNamespaces(caipNetworks, universalProviderConfigOverride);
+await provider.connect({
+  optionalNamespaces: namespaces,
+});
+```
+
+즉 현재 AppKit/Wagmi 경로는 `networks: [mainnet, sepolia, polygonAmoy]`를 넣어도 WalletConnect proposal에서 해당 체인들이 `optionalNamespaces`로 들어갈 가능성이 높다. MetaMask 모바일에서 optional chain이 기본 체크 해제 상태로 보이면, 사용자가 체크하지 않은 체인은 승인된 `session.namespaces`에 포함되지 않을 수 있다.
+
+`universalProviderConfigOverride`로 methods/chains/events/rpcMap/defaultChain을 덮어쓸 수는 있지만, 이 경로 역시 connector 내부에서는 `optionalNamespaces`로 전달된다. 따라서 “테스트넷들을 반드시 최초 승인 세션에 포함시키기”를 검증하려면 Raw WalletConnect v2에서 `requiredNamespaces`를 직접 넣는 실험이 필요하다.
+
 ## 핵심 차이
 
 현재 AppKit/Wagmi 방식:
